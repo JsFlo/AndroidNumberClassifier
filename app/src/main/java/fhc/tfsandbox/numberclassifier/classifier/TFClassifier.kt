@@ -1,20 +1,29 @@
 package fhc.tfsandbox.numberclassifier.classifier
 
-import fhc.tfsandbox.numberclassifier.DrawView
-import fhc.tfsandbox.numberclassifier.model.NodeDef
+import android.graphics.Bitmap
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
+
+data class NodeDef<T>(val name: String, val shape: Array<T>)
+
 
 class TFClassifier(val tfInference: TensorFlowInferenceInterface,
                    val inputNodeDef: NodeDef<Int>,
                    val outputNodeDef: NodeDef<Float>)
-    : SimpleClassifier<DrawView?, Int, FloatArray, FloatArray>() {
+    : SimpleClassifier<Bitmap, Int, FloatArray, FloatArray>() {
 
-    override fun transformClassifyInputToModelInput(data: DrawView?): FloatArray {
-        val floatArray = data?.pixelData?.map { it.toFloat() }
-                ?.toFloatArray()?.toTypedArray()
+    override fun transformClassifyInputToModelInput(bitmap: Bitmap): FloatArray {
+        val width = bitmap.width
+        val height = bitmap.height
 
-        // TODO: A little akward to pass around null or an empty list, need to bring in optionals
-        return floatArray?.toFloatArray()!!
+        val pixels = IntArray(width * height)
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        return pixels.map {
+            // Set 0 for white and 255 for black pixel
+            0xff - (it and 0xff)
+        }.map {
+            it.toFloat()
+        }.toFloatArray()
     }
 
     override fun classifyModelInput(modelInput: FloatArray): FloatArray {
