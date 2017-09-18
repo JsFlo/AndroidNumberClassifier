@@ -1,7 +1,10 @@
 # Number Classifier
 Basic demo showing how to include and run a custom
 TensorFlow model.
+
 | <img src="nine.png" width="200">  | <img src="two.png" width="200">  |
+
+
 Created a Classifier class to help speed up adding new models.
 The classifier interface and abstract class can be extended
 to use **any** method of classifying, not necessarily TensorFlow
