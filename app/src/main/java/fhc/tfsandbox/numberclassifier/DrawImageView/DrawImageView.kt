@@ -61,10 +61,16 @@ class DrawImageView(context: Context?, attrs: AttributeSet?) : View(context, att
     override fun init(model: CanvasModel) {
         mModel = model
         initialized = true
-        mPaint.color = Color.BLACK
         mPaint.isAntiAlias = true
-        mOffscreenBitmap = Bitmap.createBitmap(mModel.width, mModel.height, Bitmap.Config.ARGB_8888)
+        val cm = ColorMatrix()
+        cm.setSaturation(0f)
+        val f = ColorMatrixColorFilter(cm)
+        mPaint.setColorFilter(f)
+        mOffscreenBitmap = Bitmap.createBitmap(mModel.width, mModel.height, Bitmap.Config.RGB_565)
         mOffscreenCanvas = Canvas(mOffscreenBitmap)
+        mPaint.color = Color.WHITE
+        mOffscreenCanvas.drawRect(Rect(0, 0, mModel.width, mModel.height), mPaint)
+        mPaint.color = Color.BLACK
         setOnTouchListener(this)
     }
 

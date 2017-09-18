@@ -1,7 +1,10 @@
 package fhc.tfsandbox.numberclassifier.classifier
 
-import android.graphics.Bitmap
+import android.graphics.*
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
+import android.opengl.ETC1.getHeight
+import android.opengl.ETC1.getWidth
+
 
 data class NodeDef<T>(val name: String, val shape: Array<T>)
 
@@ -17,7 +20,7 @@ class TFClassifier(val tfInference: TensorFlowInferenceInterface,
 
         val pixels = IntArray(width * height)
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-
+        //bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
         return pixels.map {
             // Set 0 for white and 255 for black pixel
             0xff - (it and 0xff)
@@ -42,4 +45,21 @@ class TFClassifier(val tfInference: TensorFlowInferenceInterface,
     }
 
     private fun reshape(intArray: IntArray) = intArray.map { it.toLong() }.toLongArray()
+
+    fun toGrayscale(bmpOriginal: Bitmap): Bitmap {
+        val width: Int
+        val height: Int
+        height = bmpOriginal.height
+        width = bmpOriginal.width
+
+        val bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+        val c = Canvas(bmpGrayscale)
+        val paint = Paint()
+        val cm = ColorMatrix()
+        cm.setSaturation(0f)
+        val f = ColorMatrixColorFilter(cm)
+        paint.setColorFilter(f)
+        c.drawBitmap(bmpOriginal, 0f, 0f, paint)
+        return bmpGrayscale
+    }
 }
