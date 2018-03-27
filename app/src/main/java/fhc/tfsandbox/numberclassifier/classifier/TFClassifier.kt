@@ -2,14 +2,12 @@ package fhc.tfsandbox.numberclassifier.classifier
 
 import android.graphics.*
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 
 
 data class NodeDef<T>(val name: String, val shape: Array<T>)
 
 
-class TFClassifier(val tfInference: TensorFlowInferenceInterface,
+class TFClassifier(var tfInference: TensorFlowInferenceInterface,
                    val inputNodeDef: NodeDef<Int>,
                    val outputNodeDef: NodeDef<Float>)
     : SimpleClassifier<Bitmap, Int, FloatArray, FloatArray>() {

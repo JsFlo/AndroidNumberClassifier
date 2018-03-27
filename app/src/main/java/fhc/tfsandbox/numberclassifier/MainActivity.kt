@@ -3,6 +3,7 @@ package fhc.tfsandbox.numberclassifier
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.widget.LinearLayout
 import fhc.tfsandbox.numberclassifier.DrawImageView.CanvasModel
 import fhc.tfsandbox.numberclassifier.DrawImageView.DrawableImage
@@ -35,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         drawableImage.init(model)
 
         // setup the adapter
-        recycler_view.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        recycler_view.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false) as RecyclerView.LayoutManager?
         val adapter = getAdapter()
         recycler_view.adapter = adapter
 
