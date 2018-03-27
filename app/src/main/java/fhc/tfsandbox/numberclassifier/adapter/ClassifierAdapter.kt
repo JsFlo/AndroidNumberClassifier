@@ -1,15 +1,18 @@
 package fhc.tfsandbox.numberclassifier.adapter
 
+import android.graphics.Bitmap
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import fhc.tfsandbox.numberclassifier.R
+import fhc.tfsandbox.numberclassifier.classifier.TFClassifier
 import kotlinx.android.synthetic.main.item_classifier.view.*
 
-class ClassifierAdapter(vararg val listOfClassifiers: ClassifierViewModel) : RecyclerView.Adapter<ClassifierViewHolder>() {
+class ClassifierAdapter(listOfClassifiers: List<TFClassifier>) : RecyclerView.Adapter<ClassifierViewHolder>() {
 
+    private val classifiers: List<ClassifierViewModel> = listOfClassifiers.map { ClassifierViewModel(it.name, 0, it) }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClassifierViewHolder {
         val itemView = LayoutInflater.from(parent?.context).inflate(R.layout.item_classifier, parent, false)
@@ -17,20 +20,18 @@ class ClassifierAdapter(vararg val listOfClassifiers: ClassifierViewModel) : Rec
     }
 
     override fun onBindViewHolder(holder: ClassifierViewHolder?, position: Int) {
-        val vm = listOfClassifiers[position]
+        val vm = classifiers[position]
         holder?.let {
             it.classifierName.text = vm.name
             it.classifierResult.text = vm.result.toString()
         }
     }
 
-    override fun getItemCount(): Int = listOfClassifiers.size
+    override fun getItemCount(): Int = classifiers.size
 
-    fun setResult(name: String, result: Int) {
-        val index = listOfClassifiers
-                .indexOfFirst { it.name == name }
-        if (index != -1) {
-            listOfClassifiers[index].result = result
+    fun classify(bitmap: Bitmap) {
+        classifiers.forEachIndexed { index, classifier ->
+            classifier.classify(bitmap)
             notifyItemChanged(index)
         }
     }
@@ -47,4 +48,8 @@ class ClassifierViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-data class ClassifierViewModel(val name: String, var result: Int = 0)
+data class ClassifierViewModel(val name: String, var result: Int = 0, val tfClassifier: TFClassifier) {
+    fun classify(bitmap: Bitmap) {
+        result = tfClassifier.classify(bitmap)
+    }
+}

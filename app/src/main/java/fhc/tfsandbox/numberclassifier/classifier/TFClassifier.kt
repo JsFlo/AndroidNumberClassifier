@@ -7,9 +7,11 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 data class NodeDef<T>(val name: String, val shape: Array<T>)
 
 
-class TFClassifier(var tfInference: TensorFlowInferenceInterface,
-                   val inputNodeDef: NodeDef<Int>,
-                   val outputNodeDef: NodeDef<Float>)
+class TFClassifier(
+        val name: String,
+        var tfInference: TensorFlowInferenceInterface,
+        val inputNodeDef: NodeDef<Int>,
+        val outputNodeDef: NodeDef<Float>)
     : SimpleClassifier<Bitmap, Int, FloatArray, FloatArray>() {
 
     override fun transformClassifyInputToModelInput(bitmap: Bitmap): FloatArray {

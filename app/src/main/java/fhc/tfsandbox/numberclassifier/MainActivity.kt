@@ -23,12 +23,19 @@ class MainActivity : AppCompatActivity() {
 
         // setup classifiers
         val outputNodeDef = NodeDef("output", FloatArray(10).toTypedArray())
-        val v1classifier = TFClassifier(TensorFlowInferenceInterface(assets, "model_graph_28_v1.pb"),
-                NodeDef("inputImage", intArrayOf(1, 28, 28, 1).toTypedArray()), outputNodeDef)
-        val valid_graph_classifier = TFClassifier(TensorFlowInferenceInterface(assets, "valid_graph.pb"),
-                NodeDef("input", intArrayOf(1, 784).toTypedArray()), outputNodeDef)
-        val test_classifier = TFClassifier(TensorFlowInferenceInterface(assets, "model_graph_28_test.pb"),
-                NodeDef("inputImage", intArrayOf(1, 28, 28, 1).toTypedArray()), outputNodeDef)
+
+        val listOfClassifiers = listOf(
+                TFClassifier("v1",
+                        TensorFlowInferenceInterface(assets, "model_graph_28_v1.pb"),
+                        NodeDef("inputImage", intArrayOf(1, 28, 28, 1).toTypedArray()), outputNodeDef),
+
+                TFClassifier("valid_graph",
+                        TensorFlowInferenceInterface(assets, "valid_graph.pb"),
+                        NodeDef("input", intArrayOf(1, 784).toTypedArray()), outputNodeDef),
+
+                TFClassifier("test",
+                        TensorFlowInferenceInterface(assets, "model_graph_28_test.pb"),
+                        NodeDef("inputImage", intArrayOf(1, 28, 28, 1).toTypedArray()), outputNodeDef))
 
         // initialise draw view
         val model = CanvasModel(INPUT_SIZE, INPUT_SIZE)
@@ -36,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         drawableImage.init(model)
 
         // setup the adapter
-        recycler_view.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false) as RecyclerView.LayoutManager?
-        val adapter = getAdapter()
+        recycler_view.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+        val adapter = ClassifierAdapter(listOfClassifiers)
         recycler_view.adapter = adapter
 
         button_clear.setOnClickListener {
@@ -45,16 +52,8 @@ class MainActivity : AppCompatActivity() {
         }
         button_detect.setOnClickListener {
             val bitmap = drawableImage.getBitmap()
-            adapter.setResult("v1", v1classifier.classify(bitmap))
-            adapter.setResult("valid_graph", valid_graph_classifier.classify(bitmap))
-            adapter.setResult("test", test_classifier.classify(bitmap))
+            adapter.classify(bitmap)
         }
 
-    }
-
-    private fun getAdapter(): ClassifierAdapter {
-        return ClassifierAdapter(ClassifierViewModel("v1"),
-                ClassifierViewModel("valid_graph"),
-                ClassifierViewModel("test"))
     }
 }
