@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import fhc.tfsandbox.numberclassifier.R
-import fhc.tfsandbox.numberclassifier.classifier.TFClassifier
+import fhc.tfsandbox.numberclassifier.classifier.BitmapMnistClassifier
 import kotlinx.android.synthetic.main.item_classifier.view.*
 
-class ClassifierAdapter(listOfClassifiers: List<TFClassifier>) : RecyclerView.Adapter<ClassifierViewHolder>() {
+class ClassifierAdapter(listOfClassifiers: List<BitmapMnistClassifier>) : RecyclerView.Adapter<ClassifierViewHolder>() {
 
     private val classifiers: List<ClassifierViewModel> = listOfClassifiers.map { ClassifierViewModel(it.name, 0, it) }
 
@@ -48,8 +48,8 @@ class ClassifierViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-data class ClassifierViewModel(val name: String, var result: Int = 0, val tfClassifier: TFClassifier) {
+data class ClassifierViewModel(val name: String, var result: Int = 0, val bitmapMnistClassifier: BitmapMnistClassifier) {
     fun classify(bitmap: Bitmap) {
-        result = tfClassifier.classify(bitmap)
+        result = bitmapMnistClassifier.classify(bitmap)
     }
 }

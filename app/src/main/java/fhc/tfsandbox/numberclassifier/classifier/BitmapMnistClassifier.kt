@@ -6,15 +6,22 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 
 data class NodeDef<T>(val name: String, val shape: Array<T>)
 
-
-class TFClassifier(
+class BitmapMnistClassifier(
         val name: String,
-        var tfInference: TensorFlowInferenceInterface,
-        val inputNodeDef: NodeDef<Int>,
-        val outputNodeDef: NodeDef<Float>)
-    : SimpleClassifier<Bitmap, Int, FloatArray, FloatArray>() {
+        private var tfInference: TensorFlowInferenceInterface,
+        private val inputNodeDef: NodeDef<Int>,
+        private val outputNodeDef: NodeDef<Float>) {
 
-    override fun transformClassifyInputToModelInput(bitmap: Bitmap): FloatArray {
+    fun classify(bitmap: Bitmap): Int {
+        // transform the bitmap to a 784 float array (how our model was trained)
+        val inputAsFloatArray = getBitmapAsFloatArray(bitmap)
+        // classify! we get a 'one-hot vector' back
+        val modelOutputAsFloatArray = classifyModelInput(inputAsFloatArray)
+        // return the one that it guessed (one hot vector = [0, 0, 1, 0, 0 ...])
+        return modelOutputAsFloatArray.indexOfFirst { it > 0.0 }
+    }
+
+    private fun getBitmapAsFloatArray(bitmap: Bitmap): FloatArray {
         val width = bitmap.width
         val height = bitmap.height
 
@@ -29,7 +36,7 @@ class TFClassifier(
         }.toFloatArray()
     }
 
-    override fun classifyModelInput(modelInput: FloatArray): FloatArray {
+    private fun classifyModelInput(modelInput: FloatArray): FloatArray {
         // feed
         tfInference.feed(inputNodeDef.name, modelInput, *reshape(inputNodeDef.shape.toIntArray()))
 
@@ -40,26 +47,6 @@ class TFClassifier(
         return floatOutputs
     }
 
-    override fun transformModelOutputToClassifyOutput(modelOutput: FloatArray): Int {
-        return modelOutput.indexOfFirst { it > 0.0 }
-    }
-
     private fun reshape(intArray: IntArray) = intArray.map { it.toLong() }.toLongArray()
 
-    fun toGrayscale(bmpOriginal: Bitmap): Bitmap {
-        val width: Int
-        val height: Int
-        height = bmpOriginal.height
-        width = bmpOriginal.width
-
-        val bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-        val c = Canvas(bmpGrayscale)
-        val paint = Paint()
-        val cm = ColorMatrix()
-        cm.setSaturation(0f)
-        val f = ColorMatrixColorFilter(cm)
-        paint.setColorFilter(f)
-        c.drawBitmap(bmpOriginal, 0f, 0f, paint)
-        return bmpGrayscale
-    }
 }

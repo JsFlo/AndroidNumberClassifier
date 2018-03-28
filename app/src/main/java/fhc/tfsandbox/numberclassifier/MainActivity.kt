@@ -3,14 +3,12 @@ package fhc.tfsandbox.numberclassifier
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.widget.LinearLayout
 import fhc.tfsandbox.numberclassifier.DrawImageView.CanvasModel
 import fhc.tfsandbox.numberclassifier.DrawImageView.DrawableImage
 import fhc.tfsandbox.numberclassifier.adapter.ClassifierAdapter
-import fhc.tfsandbox.numberclassifier.adapter.ClassifierViewModel
 import fhc.tfsandbox.numberclassifier.classifier.NodeDef
-import fhc.tfsandbox.numberclassifier.classifier.TFClassifier
+import fhc.tfsandbox.numberclassifier.classifier.BitmapMnistClassifier
 import kotlinx.android.synthetic.main.activity_main.*
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 
@@ -25,15 +23,15 @@ class MainActivity : AppCompatActivity() {
         val outputNodeDef = NodeDef("output", FloatArray(10).toTypedArray())
 
         val listOfClassifiers = listOf(
-                TFClassifier("v1",
+                BitmapMnistClassifier("v1",
                         TensorFlowInferenceInterface(assets, "model_graph_28_v1.pb"),
                         NodeDef("inputImage", intArrayOf(1, 28, 28, 1).toTypedArray()), outputNodeDef),
 
-                TFClassifier("valid_graph",
+                BitmapMnistClassifier("valid_graph",
                         TensorFlowInferenceInterface(assets, "valid_graph.pb"),
                         NodeDef("input", intArrayOf(1, 784).toTypedArray()), outputNodeDef),
 
-                TFClassifier("test",
+                BitmapMnistClassifier("test",
                         TensorFlowInferenceInterface(assets, "model_graph_28_test.pb"),
                         NodeDef("inputImage", intArrayOf(1, 28, 28, 1).toTypedArray()), outputNodeDef))
 
